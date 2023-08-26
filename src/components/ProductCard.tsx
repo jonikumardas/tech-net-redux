@@ -3,12 +3,17 @@ import { toast } from './ui/use-toast';
 import { Button } from './ui/button';
 import { Link } from 'react-router-dom';
 
+import { useAppDispatch} from '@/redux/hooks';
+import { AddToCart } from '@/redux/fetures/card/cardSlice';
+
 interface IProps {
   product: IProduct;
 }
 
 export default function ProductCard({ product }: IProps) {
+  const dispatch=useAppDispatch()
   const handleAddProduct = (product: IProduct) => {
+    dispatch(AddToCart(product))
     toast({
       description: 'Product Added',
     });
