@@ -3,38 +3,38 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/use-toast';
+import { useGetProductQuery } from '@/redux/Api/apiSlice';
+import { setPriceRange, toggleState } from '@/redux/fetures/card/productSlice';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { IProduct } from '@/types/globalTypes';
 import { useEffect, useState } from 'react';
 
 export default function Products() {
-  const [data, setData] = useState<IProduct[]>([]);
-  useEffect(() => {
-    fetch('./data.json')
-      .then((res) => res.json())
-      .then((data) => setData(data));
-  }, []);
+  // const [data, setData] = useState<IProduct[]>([]);
+  // useEffect(() => {
+  //   fetch('./data?.data?json')
+  //     .then((res) => res.json())
+  //     .then((data) => setData(data));
+  // }, []);
+
+  const {data}=useGetProductQuery(undefined)
 
   const { toast } = useToast();
 
-  //! Dummy Data
-
-  const status = true;
-  const priceRange = 100;
-
-  //! **
-
+  const dispatch=useAppDispatch()
+   const {status,priceRange} = useAppSelector((state) => state.product)
   const handleSlider = (value: number[]) => {
-    console.log(value);
+    dispatch(setPriceRange(value[0]))
   };
 
   let productsData;
 
   if (status) {
-    productsData = data.filter(
-      (item) => item.status === true && item.price < priceRange
+    productsData = data?.data?.filter(
+      (item: { status: boolean; price: number; }) => item.status === true && item.price < priceRange
     );
   } else if (priceRange > 0) {
-    productsData = data.filter((item) => item.price < priceRange);
+    productsData = data?.data?.filter((item: { price: number; }) => item.price < priceRange);
   } else {
     productsData = data;
   }
@@ -45,13 +45,15 @@ export default function Products() {
         <div>
           <h1 className="text-2xl uppercase">Availability</h1>
           <div className="flex items-center space-x-2 mt-3">
-            <Switch id="in-stock" />
+            <Switch onClick={() => dispatch(toggleState())} id="in-stock" />
             <Label htmlFor="in-stock">In stock</Label>
           </div>
         </div>
         <div className="space-y-3 ">
           <h1 className="text-2xl uppercase">Price Range</h1>
           <div className="max-w-xl">
+
+            {/* slider range button  */}
             <Slider
               defaultValue={[150]}
               max={150}
@@ -64,7 +66,7 @@ export default function Products() {
         </div>
       </div>
       <div className="col-span-9 grid grid-cols-3 gap-10 pb-20">
-        {productsData?.map((product) => (
+        {productsData?.map((product:IProduct) => (
           <ProductCard key={product._id} product={product} />
         ))}
       </div>

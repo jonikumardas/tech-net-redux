@@ -17,7 +17,7 @@ import { AddToCart, removeFormCard, removeOne, } from '@/redux/fetures/card/card
 
 export default function Cart() {
  
-  const {products,total}=useAppSelector((state)=>state)
+  const {products,total}=useAppSelector((state)=>state.cart)
   const dispatch=useAppDispatch()
   return (
     <Sheet>
